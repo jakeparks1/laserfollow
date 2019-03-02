@@ -20,6 +20,7 @@ GEM
     selenium-webdriver (3.141.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.2, >= 1.2.2)
+    sequel (5.18.0)
     watir (6.16.5)
       regexp_parser (~> 1.2)
       selenium-webdriver (~> 3.6)
@@ -31,6 +32,7 @@ DEPENDENCIES
   mongo
   nokogiri
   pry
+  sequel
   watir
 
 BUNDLED WITH
