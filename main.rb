@@ -6,7 +6,7 @@ require './twitter_browser'
 filename = "files/twitonomy_investorslive_followers.csv"
 
 WANTED_KEYWORDS = %w[trad stock invest]
-db = Db.new()
+db = PostgresDb.new()
 db.load
 
 
@@ -32,22 +32,17 @@ end
 
 CSV.foreach(filename) do |row|
   line = row.join(",")
-  handle = row[1]
+  handle, description = row[1..2]
   next if (not handle) or /^\@/.match(handle).nil?
   reason = line_has_keyword?(line) || line_has_cashtag?(line)
-  if not reason
-    success = handle_has_relevant_tweets?(handle)
-    binding.pry
-  end
+  # if not reason
+  #   success = handle_has_relevant_tweets?(handle)
+  #   binding.pry
+  # end
   if reason
     handle = row[1]
     next if not handle
-
-    p line
-    p "\n"
-    p "\n"
     db.append(handle)
-    break
   end
 end
 
