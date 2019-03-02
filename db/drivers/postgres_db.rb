@@ -14,7 +14,8 @@ class PostgresDb
 
   def append(data)
     allowed_keys = %i[handle name description url referrer location language 
-      joined twitter_user_id tweets_count following_count followers_count last_tweet_date, last_tweet_text]
+      joined twitter_user_id tweets_count following_count followers_count last_tweet_date, 
+      last_tweet_text reason]
     new_data = data.reject { |key,value| !allowed_keys.include?(key) }
     
     begin

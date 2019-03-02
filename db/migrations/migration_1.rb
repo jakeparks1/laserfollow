@@ -22,6 +22,7 @@ DB.create_table :profiles do
   DateTime :last_tweet_date
   String :last_tweet_text, size: 280
   String :referrer
+  String :reason
    
   DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP, :index=>true
 end

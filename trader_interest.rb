@@ -1,18 +1,17 @@
 
 
-
-
 WANTED_KEYWORDS = %w[trad stock invest]
-def line_has_keyword?(line)
+def keyword_in_line(line)
   line = line.downcase
   WANTED_KEYWORDS.each do |keyword|
     return keyword if line.index(keyword)
   end
-  false
+  nil
 end
 
-def line_has_cashtag?(line)
-  return /\$[A-Z]{3,5}/.match(line)
+def cashtag_in_line(line)
+  match = /\$[A-Z]{3,5}/.match(line)
+  return match.to_s if match
 end
 
 def handle_has_relevant_tweets?(handle)
@@ -43,7 +42,11 @@ class TraderInterest
     line = csv_row.join(',')
     hash = csv_row_to_hash(csv_row)
     return if !valid_handle?(hash[:handle])
-    reason = line_has_keyword?(line) || line_has_cashtag?(line)
-    return hash if reason
+    
+    reason = keyword_in_line(line) || cashtag_in_line(line)
+    if reason
+      hash[:reason] = reason
+      return hash
+    end
   end
 end
