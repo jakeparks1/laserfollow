@@ -15,8 +15,9 @@ class PostgresDb
   def append(data)
     allowed_keys = %i[handle name description url referrer location language 
       joined twitter_user_id tweets_count following_count followers_count last_tweet_date
-      last_tweet_text reason relevant_tweet trader]
+      last_tweet_text reason relevant_tweet trader recent_tweets]
     new_data = data.reject { |key,value| !allowed_keys.include?(key) }
+    new_data[:recent_tweets] = new_data[:recent_tweets] && new_data[:recent_tweets].any? ? new_data[:recent_tweets].to_s : nil
     p new_data
     begin
       @dataset.insert(new_data)

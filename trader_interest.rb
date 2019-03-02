@@ -14,12 +14,16 @@ def cashtag_in_line(line)
   return match.to_s if match
 end
 
-def relevent_tweet_from_handle(handle)
-  page = Nokogiri::HTML(open("http://twitter.com/#{handle}")) 
+def tweets_from_handle(handle)
+  url = "http://twitter.com/#{handle}"
+  begin
+    page = Nokogiri::HTML(open(url)) 
+  rescue OpenURI::HTTPError
+    p "page does not exist #{url}"
+    return
+  end
   sleep(0.5)
   tweets = page.css('.tweet-text').map { |el| el.text }
-  p tweets[0..4]
-  tweet = tweets.find { |text| cashtag_in_line(text) }
 end
 
 def valid_handle?(handle)
@@ -39,7 +43,7 @@ end
 
 class TraderInterest
 
-  def self.analyze(csv_row, db)
+  def self.analyze(csv_row, db, skip_tweet_analysis=false)
     line = csv_row.join(',')
     hash = csv_row_to_hash(csv_row)
     handle = hash[:handle]
@@ -53,11 +57,25 @@ class TraderInterest
     
     reason = keyword_in_line(line) || cashtag_in_line(line) 
 
+    if skip_tweet_analysis
+      if reason
+        hash[:reason] = reason
+        hash[:trader] = true
+        return hash
+      end
+      return
+    end
+
     if !reason
-      tweet = relevent_tweet_from_handle(handle)
-      if tweet
-        hash[:relevant_tweet] = tweet
-        reason = "tweet"
+      tweets = tweets_from_handle(handle)
+      if tweets
+        hash[:recent_tweets] = tweets
+        p tweets[0..4]
+        relevant_tweet = tweets.find { |text| cashtag_in_line(text) }
+        if relevant_tweet
+          hash[:relevant_tweet] = relevant_tweet
+          reason = "tweet"
+        end
       end
     end
 
