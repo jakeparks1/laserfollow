@@ -14,11 +14,12 @@ def cashtag_in_line(line)
   return match.to_s if match
 end
 
-def handle_has_relevant_tweets?(handle)
-  browser = TwitterBrowser.new()
-  tweets = browser.get_recent_tweets(handle)
-  tweet_data = tweets.join("\n")
-  line_has_keyword?(tweet_data) || line_has_cashtag?(tweet_data)
+def relevent_tweet_from_handle(handle)
+  page = Nokogiri::HTML(open("http://twitter.com/#{handle}")) 
+  sleep(0.5)
+  tweets = page.css('.tweet-text').map { |el| el.text }
+  p tweets[0..4]
+  tweet = tweets.find { |text| cashtag_in_line(text) }
 end
 
 def valid_handle?(handle)
@@ -38,15 +39,32 @@ end
 
 class TraderInterest
 
-  def self.analyze(csv_row)
+  def self.analyze(csv_row, db)
     line = csv_row.join(',')
     hash = csv_row_to_hash(csv_row)
-    return if !valid_handle?(hash[:handle])
+    handle = hash[:handle]
+
+    if db.get_handle(handle)
+      p "already in db: #{handle}"
+      return
+    end
+
+    return if !valid_handle?(handle)
     
-    reason = keyword_in_line(line) || cashtag_in_line(line)
+    reason = keyword_in_line(line) || cashtag_in_line(line) 
+
+    if !reason
+      tweet = relevent_tweet_from_handle(handle)
+      if tweet
+        hash[:relevant_tweet] = tweet
+        reason = "tweet"
+      end
+    end
+
     if reason
       hash[:reason] = reason
-      return hash
+      hash[:trader] = true
     end
+    hash
   end
 end

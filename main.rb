@@ -12,7 +12,7 @@ db = PostgresDb.new()
 db.load
 
 CSV.foreach(filename) do |row|
-  results = TraderInterest.analyze(row)
+  results = TraderInterest.analyze(row, db)
   if results 
     results[:referrer] = referrer
     results[:blah] = "blah"

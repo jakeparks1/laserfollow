@@ -14,15 +14,19 @@ class PostgresDb
 
   def append(data)
     allowed_keys = %i[handle name description url referrer location language 
-      joined twitter_user_id tweets_count following_count followers_count last_tweet_date, 
-      last_tweet_text reason]
+      joined twitter_user_id tweets_count following_count followers_count last_tweet_date
+      last_tweet_text reason relevant_tweet trader]
     new_data = data.reject { |key,value| !allowed_keys.include?(key) }
-    
+    p new_data
     begin
       @dataset.insert(new_data)
     rescue Sequel::UniqueConstraintViolation
       p "duplicate record for #{data[:handle]}"
     end
+  end
+
+  def get_handle(handle)
+    @dataset.where(handle: handle).first
   end
 end
 
