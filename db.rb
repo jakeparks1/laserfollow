@@ -17,6 +17,7 @@ class Db
   end
 
   def append(handle)
+    @handles.add(handle)
     File.open(DB_FILE_NAME, "a") {|f| f.write(handle + "\n") }
   end
 end

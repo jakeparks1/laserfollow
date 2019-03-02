@@ -3,18 +3,38 @@ require './db'
 require 'pry'
 filename = "files/twitonomy_investorslive_followers.csv"
 
+WANTED_KEYWORDS = %w[trad stock invest]
+
+def line_has_keyword?(line)
+  line = line.downcase
+  WANTED_KEYWORDS.each do |keyword|
+    return true if line.index(keyword)
+  end
+  false
+end
+
+def line_has_cashtag?(line)
+  return /\$[A-Z]{3,5}/.match(line)
+end
+
 db = Db.new()
 db.load
 
 CSV.foreach(filename) do |row|
   line = row.join(",")
-  lowercase_line = line.downcase
-  if lowercase_line.index("trad") || lowercase_line.index("stock") || /\$[A-Z]{3,5}/.match(line)
+  if line_has_keyword?(line) || line_has_cashtag?(line)
     handle = row[1]
     next if not handle
+
+    p line
+    p "\n"
+    p "\n"
     db.append(handle)
   end
-
 end
+
+puts "Total count: #{db.handles.size}"
+
+
 
  
