@@ -18,15 +18,24 @@ class MongoDb
     collection.indexes.create_one({ handle: 1 }, unique: true)
   end
 
-  def append(handle, reason, row_raw)
+  def append(handle, reason)
     collection = @client[:profiles]
     doc = { 
       handle: handle,
-      reason: reason,
-      row_raw: row_raw
+      reason: reason
     }
-    result = collection.insert_one(doc)
+    begin
+      result = collection.insert_one(doc)
+    rescue Mongo::Error::OperationFailure
+      p "record already inserted"
+    end
     #binding.pry
-    raise "This is wrong" unless result.n == 1 
+    #raise "This is wrong" unless result.n == 1 
+  end
+
+  def get_all
+    collection.find.each do |document|
+      #=> Yields a BSON::Document.
+    end
   end
 end
