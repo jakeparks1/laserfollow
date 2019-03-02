@@ -6,21 +6,22 @@ connection_string = "postgres://#{secrets['psql_dbuser']}:#{secrets['psql_dbpass
 
 DB = Sequel.connect(connection_string)
 
-DB.create_table :items do
+DB.create_table :profiles do
   primary_key :id
+  String :handle, null: false
   String :name
-  Float :price
+  String :description, text: true 
+  String :url
+  String :location
+  String :lang
+  Date :joined
+  Bignum :twitter_user_id
+  Bignum :tweets_count
+  Fixnum :followers_count
+  Fixnum :following_count
+  DateTime :last_tweet_date
+  String :last_tweet_text, size: 280
+   
+  index [:handle]
+  DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP, :index=>true
 end
-
-items = DB[:items] # Create a dataset
-
-# Populate the table
-items.insert(:name => 'abc', :price => rand * 100)
-items.insert(:name => 'def', :price => rand * 100)
-items.insert(:name => 'ghi', :price => rand * 100)
-
-# Print out the number of records
-puts "Item count: #{items.count}"
-
-# Print out the average price
-puts "The average price is: #{items.avg(:price)}"
