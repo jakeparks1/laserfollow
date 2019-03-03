@@ -20,10 +20,10 @@ DB.create_table :profiles do
   Fixnum :followers_count
   Fixnum :following_count
   DateTime :last_tweet_date
-  String :last_tweet_text, size: 500
+  String :last_tweet_text, size: 600
   String :referrer
   String :reason
-  String :relevant_tweet, size: 500
+  String :relevant_tweet, size: 600
   TrueClass :trader, default: false
   String :recent_tweets, text: true
    

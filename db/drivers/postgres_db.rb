@@ -18,6 +18,8 @@ class PostgresDb
       last_tweet_text reason relevant_tweet trader recent_tweets]
     new_data = data.reject { |key,value| !allowed_keys.include?(key) }
     new_data[:recent_tweets] = new_data[:recent_tweets] && new_data[:recent_tweets].any? ? new_data[:recent_tweets].to_s : nil
+    new_data[:last_tweet_text] = new_data[:last_tweet_text][0...600] if new_data[:last_tweet_text]
+    new_data[:relevant_tweet] = new_data[:relevant_tweet][0...600] if new_data[:relevant_tweet]
     p new_data
     begin
       @dataset.insert(new_data)

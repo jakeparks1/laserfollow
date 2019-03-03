@@ -4,10 +4,10 @@ require 'pry'
 require './twitter_browser'
 require './trader_interest'
 
-referrer = "investorslive"
+referrer = "occupywisdom"
 filename = "files/twitonomy_#{referrer}_followers.csv"
 
-SKIP_TWEET_ANALYSIS=false
+SKIP_TWEET_ANALYSIS=true
 db = PostgresDb.new()
 db.load
 
